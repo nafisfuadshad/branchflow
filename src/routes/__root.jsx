@@ -3,6 +3,7 @@ import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary";
 import { NotFound } from "@/components/NotFound";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/lib/AuthContext";
+import Layout from "@/components/Layout";
 import { Base44Scripts } from "base44:document";
 import appCss from "@/index.css?url";
 
@@ -18,6 +19,12 @@ export const Route = createRootRoute({
     // No icon link: the platform adds the app's logo when serving.
     links: [
       { rel: "stylesheet", href: appCss },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap",
+      },
     ],
   }),
   errorComponent: DefaultCatchBoundary,
@@ -29,7 +36,9 @@ export const Route = createRootRoute({
 function RootComponent() {
   return (
     <AuthProvider>
-      <Outlet />
+      <Layout>
+        <Outlet />
+      </Layout>
       <Toaster />
     </AuthProvider>
   );
