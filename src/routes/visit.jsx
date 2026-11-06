@@ -10,6 +10,7 @@ export const Route = createFileRoute("/visit")({
   validateSearch: (search) => ({
     service: typeof search.service === "string" ? search.service : undefined,
     branch: typeof search.branch === "string" ? search.branch : undefined,
+    zip: typeof search.zip === "string" ? search.zip : undefined,
   }),
   head: () => ({
     meta: [
@@ -21,7 +22,7 @@ export const Route = createFileRoute("/visit")({
 });
 
 function VisitStep() {
-  const { service: serviceId, branch: branchId } = Route.useSearch();
+  const { service: serviceId, branch: branchId, zip } = Route.useSearch();
   const service = findService(serviceId);
   const branch = findBranch(branchId);
 
@@ -29,8 +30,8 @@ function VisitStep() {
 
   return (
     <FlowShell
-      step={2}
-      eyebrow="Step 3 of 5"
+      step={3}
+      eyebrow="Step 4 of 7"
       title="Here's what to expect"
       intro="A sample estimate for today, plus the documents our fictional banker would ask to see."
     >
@@ -80,7 +81,7 @@ function VisitStep() {
       <div className="mt-8 flex flex-wrap items-center gap-4">
         <Link
           to="/appointment"
-          search={{ service: service.id, branch: branch.id }}
+          search={{ service: service.id, branch: branch.id, zip }}
           className="group inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/20"
         >
           Choose a date & time
@@ -88,7 +89,7 @@ function VisitStep() {
         </Link>
         <Link
           to="/branch"
-          search={{ service: service.id }}
+          search={{ service: service.id, zip }}
           className="text-xs text-muted-foreground underline-offset-4 hover:underline"
         >
           Choose a different branch

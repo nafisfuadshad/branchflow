@@ -17,7 +17,7 @@ function ServiceStep() {
   return (
     <FlowShell
       step={0}
-      eyebrow="Step 1 of 5"
+      eyebrow="Step 1 of 7"
       title="What do you need help with?"
       intro="Pick the service that fits best. We'll show the right document checklist for it."
     >
@@ -25,7 +25,7 @@ function ServiceStep() {
         {SERVICES.map((service) => (
           <Link
             key={service.id}
-            to="/branch"
+            to="/zipcode"
             search={{ service: service.id }}
             className="group flex items-start justify-between gap-4 rounded-2xl border border-border bg-card p-5 transition-all hover:-translate-y-px hover:border-primary/40 hover:shadow-sm sm:p-6"
           >

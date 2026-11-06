@@ -1,4 +1,12 @@
-const STEPS = ["Service", "Branch", "Wait & documents", "Appointment", "Confirmed"];
+const STEPS = [
+  "Service",
+  "Location",
+  "Branch",
+  "Wait & documents",
+  "Appointment",
+  "Review",
+  "Confirmed",
+];
 
 export default function StepProgress({ current = 0 }) {
   return (

@@ -9,6 +9,9 @@ export const Route = createFileRoute("/appointment")({
   validateSearch: (search) => ({
     service: typeof search.service === "string" ? search.service : undefined,
     branch: typeof search.branch === "string" ? search.branch : undefined,
+    zip: typeof search.zip === "string" ? search.zip : undefined,
+    date: typeof search.date === "string" ? search.date : undefined,
+    time: typeof search.time === "string" ? search.time : undefined,
   }),
   head: () => ({
     meta: [
@@ -20,11 +23,17 @@ export const Route = createFileRoute("/appointment")({
 });
 
 function AppointmentStep() {
-  const { service: serviceId, branch: branchId } = Route.useSearch();
+  const {
+    service: serviceId,
+    branch: branchId,
+    zip,
+    date: initialDate,
+    time: initialTime,
+  } = Route.useSearch();
   const navigate = useNavigate();
   const [minDate, setMinDate] = useState("");
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
+  const [date, setDate] = useState(initialDate || "");
+  const [time, setTime] = useState(initialTime || "");
 
   const service = findService(serviceId);
   const branch = findBranch(branchId);
@@ -37,18 +46,18 @@ function AppointmentStep() {
 
   const ready = Boolean(date && time);
 
-  const confirm = () => {
+  const review = () => {
     if (!ready) return;
     navigate({
-      to: "/confirmation",
-      search: { service: service.id, branch: branch.id, date, time },
+      to: "/review",
+      search: { service: service.id, branch: branch.id, zip, date, time },
     });
   };
 
   return (
     <FlowShell
-      step={3}
-      eyebrow="Step 4 of 5"
+      step={4}
+      eyebrow="Step 5 of 7"
       title="Pick a date and time"
       intro={`Sample availability at ${branch.name}. Times shown are placeholders for this prototype.`}
     >
@@ -106,16 +115,16 @@ function AppointmentStep() {
       <div className="mt-8 flex flex-wrap items-center gap-4">
         <button
           type="button"
-          onClick={confirm}
+          onClick={review}
           disabled={!ready}
           className="group inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-all enabled:hover:-translate-y-0.5 enabled:hover:shadow-lg enabled:hover:shadow-primary/20 disabled:cursor-not-allowed disabled:opacity-40"
         >
-          Confirm appointment
+          Review appointment
           <ArrowRight className="h-4 w-4 transition-transform group-enabled:group-hover:translate-x-0.5" />
         </button>
         <Link
           to="/visit"
-          search={{ service: service.id, branch: branch.id }}
+          search={{ service: service.id, branch: branch.id, zip }}
           className="text-xs text-muted-foreground underline-offset-4 hover:underline"
         >
           Back to wait time & documents

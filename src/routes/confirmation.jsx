@@ -4,6 +4,7 @@ import FlowShell from "@/components/FlowShell";
 import DocumentChecklist from "@/components/DocumentChecklist";
 import WaitBadge from "@/components/WaitBadge";
 import StartOver from "@/components/StartOver";
+import Row from "@/components/SummaryRow";
 import { findBranch, findService, formatDate } from "@/data/sampleData";
 
 export const Route = createFileRoute("/confirmation")({
@@ -30,18 +31,6 @@ function referenceCode(seed) {
   return `BF-${String(hash).padStart(5, "0")}`;
 }
 
-function Row({ icon: Icon, label, value }) {
-  return (
-    <div className="flex items-start gap-3 border-t border-border py-3.5 first:border-t-0 first:pt-0">
-      <Icon className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
-      <div>
-        <p className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">{label}</p>
-        <p className="mt-1 text-sm font-medium text-foreground">{value}</p>
-      </div>
-    </div>
-  );
-}
-
 function ConfirmationStep() {
   const { service: serviceId, branch: branchId, date, time } = Route.useSearch();
   const service = findService(serviceId);
@@ -54,7 +43,7 @@ function ConfirmationStep() {
   const code = referenceCode(`${service.id}|${branch.id}|${date}|${time}`);
 
   return (
-    <FlowShell step={4} eyebrow="Step 5 of 5" title="You're all set.">
+    <FlowShell step={6} eyebrow="Step 7 of 7" title="You're all set.">
       <div className="rounded-2xl border border-border bg-card p-6 sm:p-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
