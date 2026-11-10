@@ -3,12 +3,14 @@ import { ArrowRight, Clock, MapPin } from "lucide-react";
 import FlowShell from "@/components/FlowShell";
 import WaitBadge from "@/components/WaitBadge";
 import StartOver from "@/components/StartOver";
-import { BRANCHES, branchesForZip, findService } from "@/data/sampleData";
+import { BRANCHES, findService } from "@/data/sampleData";
 
 export const Route = createFileRoute("/branch")({
   validateSearch: (search) => ({
     service: typeof search.service === "string" ? search.service : undefined,
     zip: typeof search.zip === "string" ? search.zip : undefined,
+    city: typeof search.city === "string" ? search.city : undefined,
+    state: typeof search.state === "string" ? search.state : undefined,
   }),
   head: () => ({
     meta: [
@@ -20,20 +22,17 @@ export const Route = createFileRoute("/branch")({
 });
 
 function BranchStep() {
-  const { service: serviceId, zip } = Route.useSearch();
+  const { service: serviceId, zip, city, state } = Route.useSearch();
   const service = findService(serviceId);
 
   if (!service) return <StartOver message="Choose a service first." />;
 
-  const nearby = branchesForZip(zip);
-  const noMatch = Boolean(zip) && nearby.length === 0;
-  const branches = nearby.length ? nearby : BRANCHES;
+  const branches = BRANCHES;
+  const place = city && state ? `${city}, ${state}` : "";
 
-  const intro = noMatch
-    ? `No sample branch is filed under ${zip}, so here are all the sample locations instead.`
-    : zip
-      ? `Sample branches that cover ZIP ${zip}, with today's estimated wait.`
-      : "Each sample branch shows today's estimated wait so you can pick the quieter one.";
+  const intro = place
+    ? `Fictional BranchFlow branches near ${place}, with today's estimated wait.`
+    : "Each sample branch shows today's estimated wait so you can pick the quieter one.";
 
   return (
     <FlowShell

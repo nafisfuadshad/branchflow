@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Check, MapPin, Clock, CalendarDays, Timer, FileText } from "lucide-react";
+import { Check, MapPin, Clock, CalendarDays, Timer, FileText, Mail } from "lucide-react";
 import FlowShell from "@/components/FlowShell";
 import DocumentChecklist from "@/components/DocumentChecklist";
 import WaitBadge from "@/components/WaitBadge";
@@ -13,6 +13,8 @@ export const Route = createFileRoute("/confirmation")({
     branch: typeof search.branch === "string" ? search.branch : undefined,
     date: typeof search.date === "string" ? search.date : undefined,
     time: typeof search.time === "string" ? search.time : undefined,
+    email: typeof search.email === "string" ? search.email : undefined,
+    sent: typeof search.sent === "string" ? search.sent : undefined,
   }),
   head: () => ({
     meta: [
@@ -32,7 +34,7 @@ function referenceCode(seed) {
 }
 
 function ConfirmationStep() {
-  const { service: serviceId, branch: branchId, date, time } = Route.useSearch();
+  const { service: serviceId, branch: branchId, date, time, email, sent } = Route.useSearch();
   const service = findService(serviceId);
   const branch = findBranch(branchId);
 
@@ -64,6 +66,13 @@ function ConfirmationStep() {
           <Row icon={CalendarDays} label="Date" value={formatDate(date)} />
           <Row icon={Clock} label="Time" value={time} />
           <Row icon={Timer} label="Estimated wait" value={branch.wait} />
+          {email && (
+            <Row
+              icon={Mail}
+              label={sent === "0" ? "Confirmation email not sent to" : "Confirmation sent to"}
+              value={email}
+            />
+          )}
         </div>
 
         <div className="mt-6 rounded-xl bg-accent/60 p-5">

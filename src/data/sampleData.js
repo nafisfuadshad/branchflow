@@ -126,7 +126,7 @@ export const findBranch = (id) => BRANCHES.find((b) => b.id === id) || null;
 export const branchesForZip = (zip) =>
   zip ? BRANCHES.filter((b) => b.zips.includes(zip)) : [];
 
-export const SAMPLE_ZIPS = [...new Set(BRANCHES.flatMap((b) => b.zips))].sort();
+export const SAMPLE_ZIPS = ["02108", "02459", "01451"];
 
 export const formatDate = (isoDate) => {
   if (!isoDate) return "";

@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { ArrowRight, MapPin } from "lucide-react";
 import FlowShell from "@/components/FlowShell";
 import StartOver from "@/components/StartOver";
+import { lookupZipcode } from "@/lib/server-fns";
 import { SAMPLE_ZIPS, findService } from "@/data/sampleData";
 
 export const Route = createFileRoute("/zipcode")({
@@ -12,7 +14,7 @@ export const Route = createFileRoute("/zipcode")({
   head: () => ({
     meta: [
       { title: "Enter your ZIP code — BranchFlow" },
-      { name: "description", content: "Add a sample ZIP code to see nearby fictional branches." },
+      { name: "description", content: "Enter your U.S. ZIP code to see the city, state and nearby fictional branches." },
     ],
   }),
   component: ZipcodeStep,
@@ -22,19 +24,44 @@ function ZipcodeStep() {
   const { service: serviceId } = Route.useSearch();
   const service = findService(serviceId);
   const navigate = useNavigate();
+  const lookup = useServerFn(lookupZipcode);
   const [zip, setZip] = useState("");
   const [error, setError] = useState("");
+  const [checking, setChecking] = useState(false);
 
   if (!service) return <StartOver message="Choose a service first." />;
 
-  const submit = (event) => {
+  const submit = async (event) => {
     event.preventDefault();
     if (!/^\d{5}$/.test(zip)) {
-      setError("Enter a 5-digit ZIP code, like 01402.");
+      setError("Enter a valid 5-digit U.S. ZIP code, like 02108.");
       return;
     }
+
     setError("");
-    navigate({ to: "/branch", search: { service: service.id, zip } });
+    setChecking(true);
+    try {
+      const result = await lookup({ data: { zip } });
+      if (!result.valid) {
+        setError(
+          result.reason === "not_found"
+            ? "We couldn't find that ZIP code. Please check it and try again."
+            : "We couldn't check that ZIP code right now. Please try again.",
+        );
+        return;
+      }
+      navigate({
+        to: "/branch",
+        search: {
+          service: service.id,
+          zip: result.zip,
+          city: result.city,
+          state: result.state,
+        },
+      });
+    } finally {
+      setChecking(false);
+    }
   };
 
   return (
@@ -42,7 +69,7 @@ function ZipcodeStep() {
       step={1}
       eyebrow={`Step 2 of 7 · ${service.name}`}
       title="Where should we look?"
-      intro="Add a ZIP code and we'll show the sample branches that cover it."
+      intro="Enter your ZIP code and we'll show the city, state and nearby fictional branches."
     >
       <form onSubmit={submit} className="rounded-2xl border border-border bg-card p-6 sm:p-7">
         <label
@@ -68,10 +95,13 @@ function ZipcodeStep() {
 
         <button
           type="submit"
-          className="group mt-6 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/20"
+          disabled={checking}
+          className="group mt-6 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-all enabled:hover:-translate-y-0.5 enabled:hover:shadow-lg enabled:hover:shadow-primary/20 disabled:cursor-wait disabled:opacity-60"
         >
-          Find nearby branches
-          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          {checking ? "Checking ZIP code…" : "Find nearby branches"}
+          {!checking && (
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          )}
         </button>
 
         <p className="mt-6 border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">

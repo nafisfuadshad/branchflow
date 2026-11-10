@@ -1,5 +1,8 @@
+import { useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowRight, CalendarDays, Clock, FileText, MapPin, Timer } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { ArrowRight, CalendarDays, Clock, FileText, Mail, MapPin, Timer } from "lucide-react";
+import { sendAppointmentConfirmation } from "@/lib/server-fns";
 import FlowShell from "@/components/FlowShell";
 import DocumentChecklist from "@/components/DocumentChecklist";
 import WaitBadge from "@/components/WaitBadge";
@@ -29,12 +32,49 @@ function ReviewStep() {
   const service = findService(serviceId);
   const branch = findBranch(branchId);
   const navigate = useNavigate();
+  const send = useServerFn(sendAppointmentConfirmation);
+  const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [sending, setSending] = useState(false);
 
   if (!service || !branch || !date || !time) {
     return <StartOver message="This appointment summary is incomplete." />;
   }
 
   const details = { service: service.id, branch: branch.id, zip, date, time };
+
+  const confirm = async () => {
+    const address = email.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(address)) {
+      setEmailError("Enter a valid email address so we can send your confirmation.");
+      return;
+    }
+
+    setEmailError("");
+    setSending(true);
+    let sent = "0";
+    try {
+      const result = await send({
+        data: {
+          email: address,
+          service: service.name,
+          branch: branch.name,
+          branch_address: branch.address,
+          date: formatDate(date),
+          time,
+          wait: branch.wait,
+          documents: service.documents,
+        },
+      });
+      sent = result?.success ? "1" : "0";
+    } catch {
+      sent = "0";
+    } finally {
+      setSending(false);
+    }
+
+    navigate({ to: "/confirmation", search: { ...details, email: address, sent } });
+  };
 
   return (
     <FlowShell
@@ -65,16 +105,46 @@ function ReviewStep() {
             <DocumentChecklist documents={service.documents} />
           </div>
         </div>
+
+        <div className="mt-6 border-t border-border pt-5">
+          <label
+            htmlFor="email"
+            className="flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-muted-foreground"
+          >
+            <Mail className="h-3.5 w-3.5" />
+            Email address
+          </label>
+          <input
+            id="email"
+            type="email"
+            required
+            autoComplete="email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            placeholder="you@example.com"
+            className="mt-3 w-full rounded-xl border border-input bg-background px-4 py-3 text-sm text-foreground outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-ring/20 sm:max-w-sm"
+          />
+          {emailError ? (
+            <p className="mt-3 text-xs text-destructive">{emailError}</p>
+          ) : (
+            <p className="mt-3 text-xs text-muted-foreground">
+              We'll send your appointment confirmation to this address.
+            </p>
+          )}
+        </div>
       </div>
 
       <div className="mt-8 flex flex-wrap items-center gap-4">
         <button
           type="button"
-          onClick={() => navigate({ to: "/confirmation", search: details })}
-          className="group inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/20"
+          onClick={confirm}
+          disabled={sending}
+          className="group inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-all enabled:hover:-translate-y-0.5 enabled:hover:shadow-lg enabled:hover:shadow-primary/20 disabled:cursor-wait disabled:opacity-60"
         >
-          Confirm appointment
-          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          {sending ? "Sending confirmation…" : "Confirm appointment"}
+          {!sending && (
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          )}
         </button>
         <Link
           to="/appointment"
