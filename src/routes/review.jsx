@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
 import { ArrowRight, CalendarDays, Clock, FileText, Mail, MapPin, Timer } from "lucide-react";
-import { sendAppointmentConfirmation } from "@/lib/server-fns";
 import FlowShell from "@/components/FlowShell";
 import DocumentChecklist from "@/components/DocumentChecklist";
 import WaitBadge from "@/components/WaitBadge";
@@ -32,10 +30,8 @@ function ReviewStep() {
   const service = findService(serviceId);
   const branch = findBranch(branchId);
   const navigate = useNavigate();
-  const send = useServerFn(sendAppointmentConfirmation);
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
-  const [sending, setSending] = useState(false);
 
   if (!service || !branch || !date || !time) {
     return <StartOver message="This appointment summary is incomplete." />;
@@ -43,7 +39,7 @@ function ReviewStep() {
 
   const details = { service: service.id, branch: branch.id, zip, date, time };
 
-  const confirm = async () => {
+  const confirm = () => {
     const address = email.trim();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(address)) {
       setEmailError("Enter a valid email address so we can send your confirmation.");
@@ -51,29 +47,7 @@ function ReviewStep() {
     }
 
     setEmailError("");
-    setSending(true);
-    let sent = "0";
-    try {
-      const result = await send({
-        data: {
-          email: address,
-          service: service.name,
-          branch: branch.name,
-          branch_address: branch.address,
-          date: formatDate(date),
-          time,
-          wait: branch.wait,
-          documents: service.documents,
-        },
-      });
-      sent = result?.success ? "1" : "0";
-    } catch {
-      sent = "0";
-    } finally {
-      setSending(false);
-    }
-
-    navigate({ to: "/confirmation", search: { ...details, email: address, sent } });
+    navigate({ to: "/confirmation", search: { ...details, email: address } });
   };
 
   return (
@@ -138,13 +112,10 @@ function ReviewStep() {
         <button
           type="button"
           onClick={confirm}
-          disabled={sending}
-          className="group inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-all enabled:hover:-translate-y-0.5 enabled:hover:shadow-lg enabled:hover:shadow-primary/20 disabled:cursor-wait disabled:opacity-60"
+          className="group inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/20"
         >
-          {sending ? "Sending confirmation…" : "Confirm appointment"}
-          {!sending && (
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-          )}
+          Confirm appointment
+          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
         </button>
         <Link
           to="/appointment"

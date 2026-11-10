@@ -14,7 +14,6 @@ export const Route = createFileRoute("/confirmation")({
     date: typeof search.date === "string" ? search.date : undefined,
     time: typeof search.time === "string" ? search.time : undefined,
     email: typeof search.email === "string" ? search.email : undefined,
-    sent: typeof search.sent === "string" ? search.sent : undefined,
   }),
   head: () => ({
     meta: [
@@ -34,7 +33,7 @@ function referenceCode(seed) {
 }
 
 function ConfirmationStep() {
-  const { service: serviceId, branch: branchId, date, time, email, sent } = Route.useSearch();
+  const { service: serviceId, branch: branchId, date, time, email } = Route.useSearch();
   const service = findService(serviceId);
   const branch = findBranch(branchId);
 
@@ -67,11 +66,7 @@ function ConfirmationStep() {
           <Row icon={Clock} label="Time" value={time} />
           <Row icon={Timer} label="Estimated wait" value={branch.wait} />
           {email && (
-            <Row
-              icon={Mail}
-              label={sent === "0" ? "Confirmation email not sent to" : "Confirmation sent to"}
-              value={email}
-            />
+            <Row icon={Mail} label="Confirmation email sent to" value={email} />
           )}
         </div>
 
