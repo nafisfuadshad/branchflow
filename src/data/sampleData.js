@@ -56,21 +56,6 @@ export const SERVICES = [
   },
 ];
 
-export const TIME_SLOTS = [
-  "9:00 AM",
-  "9:30 AM",
-  "10:00 AM",
-  "10:30 AM",
-  "11:00 AM",
-  "11:30 AM",
-  "1:00 PM",
-  "1:30 PM",
-  "2:00 PM",
-  "2:30 PM",
-  "3:00 PM",
-  "3:30 PM",
-];
-
 export const findService = (id) => SERVICES.find((s) => s.id === id) || null;
 
 export const SAMPLE_ZIPS = ["02108", "02459", "01451"];
@@ -86,12 +71,4 @@ export const formatDate = (isoDate) => {
     year: "numeric",
     timeZone: "UTC",
   });
-};
-
-export const todayISO = () => {
-  const now = new Date();
-  const y = now.getFullYear();
-  const m = String(now.getMonth() + 1).padStart(2, "0");
-  const d = String(now.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
 };

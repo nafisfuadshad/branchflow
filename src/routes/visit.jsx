@@ -15,6 +15,7 @@ export const Route = createFileRoute("/visit")({
     wait: typeof search.wait === "string" ? search.wait : undefined,
     tier: typeof search.tier === "string" ? search.tier : undefined,
     hours: typeof search.hours === "string" ? search.hours : undefined,
+    sched: typeof search.sched === "string" ? search.sched : undefined,
     zip: typeof search.zip === "string" ? search.zip : undefined,
   }),
   head: () => ({

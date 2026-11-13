@@ -16,6 +16,7 @@ export const Route = createFileRoute("/confirmation")({
     wait: typeof search.wait === "string" ? search.wait : undefined,
     tier: typeof search.tier === "string" ? search.tier : undefined,
     hours: typeof search.hours === "string" ? search.hours : undefined,
+    sched: typeof search.sched === "string" ? search.sched : undefined,
     date: typeof search.date === "string" ? search.date : undefined,
     time: typeof search.time === "string" ? search.time : undefined,
     name: typeof search.name === "string" ? search.name : undefined,
@@ -73,9 +74,7 @@ function ConfirmationStep() {
           <Row icon={CalendarDays} label="Date" value={formatDate(date)} />
           <Row icon={Clock} label="Time" value={time} />
           <Row icon={Timer} label="Estimated wait" value={branch.wait} />
-          {email && (
-            <Row icon={Mail} label="Confirmation email sent to" value={email} />
-          )}
+          {email && <Row icon={Mail} label="Email" value={email} />}
         </div>
 
         <div className="mt-6 rounded-xl bg-accent/60 p-5">

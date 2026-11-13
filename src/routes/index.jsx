@@ -1,13 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, Clock, FileText, CalendarCheck } from "lucide-react";
 
-const FEATURED_BRANCH = {
-  name: "Wells Fargo – Market Street Branch",
-  address: "1256 Market Street, San Francisco, CA 94102",
-  wait: "10–20 minutes",
-  hours: "Mon–Fri 9:00 AM – 5:00 PM · Sat 9:00 AM – 1:00 PM",
-};
-
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -15,7 +8,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Pick a service, choose a sample branch, see the wait time and documents, then book a sample appointment.",
+          "Pick a service, find a nearby Wells Fargo branch, see the sample wait and documents, then book a sample appointment.",
       },
     ],
   }),
@@ -29,11 +22,9 @@ const PREVIEW_STEPS = [
 ];
 
 function Home() {
-  const branch = FEATURED_BRANCH;
-
   return (
     <div className="mx-auto w-full max-w-5xl px-5 sm:px-8">
-      <section className="grid items-center gap-12 py-14 sm:py-20 md:grid-cols-[1.1fr_0.9fr]">
+      <section className="py-14 sm:py-20">
         <div>
           <p className="text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
             Branch visits, without the guesswork
@@ -57,30 +48,6 @@ function Home() {
               Plan My Visit
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
-          </div>
-        </div>
-
-        <div className="relative">
-          <div className="absolute -inset-3 rounded-[2rem] bg-[hsl(var(--sand))]" />
-          <div className="relative rounded-3xl border border-border bg-card p-6 shadow-sm">
-            <p className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
-              Wells Fargo branch
-            </p>
-            <p className="mt-2 font-display text-2xl tracking-tight">{branch.name}</p>
-            <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-              {branch.address}
-            </p>
-
-            <div className="mt-5 flex items-baseline gap-2 border-t border-border pt-4">
-              <span className="font-display text-4xl tracking-tight text-primary">
-                {branch.wait}
-              </span>
-              <span className="text-xs text-muted-foreground">estimated wait</span>
-            </div>
-
-            <div className="mt-4 space-y-1 text-xs text-muted-foreground">
-              <p>{branch.hours}</p>
-            </div>
           </div>
         </div>
       </section>

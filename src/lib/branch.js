@@ -1,3 +1,5 @@
+import { decodeSchedule } from "@/lib/hours";
+
 // Carries the selected branch through the flow in the URL search params,
 // since branch locations are looked up live instead of stored in sample data.
 export const branchSearchParams = (branch) => ({
@@ -6,6 +8,7 @@ export const branchSearchParams = (branch) => ({
   wait: branch.wait,
   tier: branch.waitTier,
   hours: branch.hours,
+  sched: branch.sched,
 });
 
 export const branchFromSearch = (search) => {
@@ -17,6 +20,8 @@ export const branchFromSearch = (search) => {
     wait: search.wait || "",
     waitTier: search.tier || "short",
     hours: search.hours || "",
+    sched: search.sched || "",
+    schedule: decodeSchedule(search.sched),
   };
 };
 

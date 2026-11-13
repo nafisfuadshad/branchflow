@@ -17,6 +17,7 @@ export const Route = createFileRoute("/review")({
     wait: typeof search.wait === "string" ? search.wait : undefined,
     tier: typeof search.tier === "string" ? search.tier : undefined,
     hours: typeof search.hours === "string" ? search.hours : undefined,
+    sched: typeof search.sched === "string" ? search.sched : undefined,
     zip: typeof search.zip === "string" ? search.zip : undefined,
     date: typeof search.date === "string" ? search.date : undefined,
     time: typeof search.time === "string" ? search.time : undefined,
@@ -85,6 +86,7 @@ function ReviewStep() {
 
         <div className="mt-5">
           {name.trim() && <SummaryRow icon={User} label="Name" value={name.trim()} />}
+          {email.trim() && <SummaryRow icon={Mail} label="Email" value={email.trim()} />}
           <SummaryRow icon={FileText} label="Service" value={service.name} />
           <SummaryRow icon={MapPin} label="Branch" value={`${branch.name} · ${branch.address}`} />
           <SummaryRow icon={CalendarDays} label="Date" value={formatDate(date)} />

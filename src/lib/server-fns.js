@@ -1,5 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import {
+  DEFAULT_SCHEDULE,
+  encodeSchedule,
+  formatSchedule,
+  parseOpeningHours,
+} from "@/lib/hours";
 
 export const getServerInfo = createServerFn({ method: "GET" }).handler(async () => ({
   renderedAt: new Date().toISOString(),
@@ -80,8 +86,6 @@ const SAMPLE_WAITS = [
   { wait: "20–30 minutes", tier: "long" },
 ];
 
-const SAMPLE_HOURS = "Mon–Fri 9:00 AM – 5:00 PM · Sat 9:00 AM – 1:00 PM";
-
 const toRadians = (value) => (value * Math.PI) / 180;
 
 const milesBetween = (lat1, lon1, lat2, lon2) => {
@@ -127,7 +131,7 @@ export const findNearbyBranches = createServerFn({ method: "GET" })
     const lonDelta = latDelta / Math.max(Math.cos(toRadians(lat)), 0.25);
     const viewbox = [lon - lonDelta, lat - latDelta, lon + lonDelta, lat + latDelta].join(",");
     const searchUrl =
-      "https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=50" +
+      "https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&extratags=1&limit=50" +
       `&bounded=1&viewbox=${viewbox}&q=Wells%20Fargo`;
 
     let results;
@@ -174,6 +178,7 @@ export const findNearbyBranches = createServerFn({ method: "GET" })
         (result.display_name || "").split(", ").slice(0, 3).join(", ");
 
       const sample = SAMPLE_WAITS[hashString(key) % SAMPLE_WAITS.length];
+      const schedule = parseOpeningHours(result.extratags?.opening_hours) || DEFAULT_SCHEDULE;
 
       branches.push({
         id: key,
@@ -183,7 +188,8 @@ export const findNearbyBranches = createServerFn({ method: "GET" })
         distanceLabel: `${miles.toFixed(1)} mi`,
         wait: sample.wait,
         waitTier: sample.tier,
-        hours: SAMPLE_HOURS,
+        hours: formatSchedule(schedule),
+        sched: encodeSchedule(schedule),
       });
     }
 
