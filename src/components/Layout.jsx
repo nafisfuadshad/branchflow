@@ -23,9 +23,10 @@ export default function Layout({ children }) {
 
       <footer className="border-t border-border/70">
         <div className="mx-auto w-full max-w-5xl px-5 py-6 text-xs leading-relaxed text-muted-foreground sm:px-8">
-          BranchFlow is a demonstration prototype with fictional branches, services
-          and wait times. It is not affiliated with any bank and never asks for real
-          financial details.
+          BranchFlow is a student prototype built for a class project. It is not
+          affiliated with or endorsed by Wells Fargo. Branch locations come from
+          public map data and wait times are sample estimates. No appointments are
+          booked and no banking or account details are collected.
         </div>
       </footer>
     </div>

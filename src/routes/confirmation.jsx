@@ -1,18 +1,24 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Check, MapPin, Clock, CalendarDays, Timer, FileText, Mail } from "lucide-react";
+import { Check, MapPin, Clock, CalendarDays, Timer, FileText, Mail, User } from "lucide-react";
 import FlowShell from "@/components/FlowShell";
 import DocumentChecklist from "@/components/DocumentChecklist";
 import WaitBadge from "@/components/WaitBadge";
 import StartOver from "@/components/StartOver";
 import Row from "@/components/SummaryRow";
-import { findBranch, findService, formatDate } from "@/data/sampleData";
+import { findService, formatDate } from "@/data/sampleData";
+import { branchFromSearch } from "@/lib/branch";
 
 export const Route = createFileRoute("/confirmation")({
   validateSearch: (search) => ({
     service: typeof search.service === "string" ? search.service : undefined,
     branch: typeof search.branch === "string" ? search.branch : undefined,
+    address: typeof search.address === "string" ? search.address : undefined,
+    wait: typeof search.wait === "string" ? search.wait : undefined,
+    tier: typeof search.tier === "string" ? search.tier : undefined,
+    hours: typeof search.hours === "string" ? search.hours : undefined,
     date: typeof search.date === "string" ? search.date : undefined,
     time: typeof search.time === "string" ? search.time : undefined,
+    name: typeof search.name === "string" ? search.name : undefined,
     email: typeof search.email === "string" ? search.email : undefined,
   }),
   head: () => ({
@@ -33,9 +39,10 @@ function referenceCode(seed) {
 }
 
 function ConfirmationStep() {
-  const { service: serviceId, branch: branchId, date, time, email } = Route.useSearch();
+  const search = Route.useSearch();
+  const { service: serviceId, date, time, name, email } = search;
   const service = findService(serviceId);
-  const branch = findBranch(branchId);
+  const branch = branchFromSearch(search);
 
   if (!service || !branch || !date || !time) {
     return <StartOver message="This appointment summary is incomplete." />;
@@ -60,6 +67,7 @@ function ConfirmationStep() {
         </div>
 
         <div className="mt-6">
+          {name && <Row icon={User} label="Name" value={name} />}
           <Row icon={FileText} label="Service" value={service.name} />
           <Row icon={MapPin} label="Branch" value={`${branch.name} · ${branch.address}`} />
           <Row icon={CalendarDays} label="Date" value={formatDate(date)} />
@@ -93,8 +101,9 @@ function ConfirmationStep() {
       </div>
 
       <p className="mt-8 text-xs leading-relaxed text-muted-foreground">
-        This is a prototype confirmation. No appointment was booked with a real bank
-        and no personal information was collected.
+        BranchFlow is a student prototype built for a class project and is not
+        affiliated with or endorsed by Wells Fargo. This is a simulated confirmation:
+        no appointment was booked and no financial account information was collected.
       </p>
     </FlowShell>
   );

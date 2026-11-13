@@ -56,54 +56,6 @@ export const SERVICES = [
   },
 ];
 
-export const BRANCHES = [
-  {
-    id: "riverbend",
-    name: "Riverbend Branch",
-    address: "418 Riverbend Ave, Millbrook, MA 01402",
-    hours: "Mon–Fri 9:00 AM – 5:00 PM · Sat 9:00 AM – 1:00 PM",
-    wait: "5–10 minutes",
-    waitTier: "short",
-    zips: ["01402", "01403", "01405"],
-  },
-  {
-    id: "oak-hill",
-    name: "Oak Hill Branch",
-    address: "22 Oak Hill Plaza, Millbrook, MA 01405",
-    hours: "Mon–Fri 8:30 AM – 6:00 PM · Sat 9:00 AM – 2:00 PM",
-    wait: "10–20 minutes",
-    waitTier: "medium",
-    zips: ["01405", "01406", "01402"],
-  },
-  {
-    id: "harbor-point",
-    name: "Harbor Point Branch",
-    address: "905 Harbor Point Rd, Millbrook, MA 01408",
-    hours: "Mon–Fri 9:00 AM – 4:30 PM · Closed Sat",
-    wait: "20–30 minutes",
-    waitTier: "long",
-    zips: ["01408", "01407"],
-  },
-  {
-    id: "cedar-grove",
-    name: "Cedar Grove Branch",
-    address: "77 Cedar Grove Ln, Millbrook, MA 01406",
-    hours: "Mon–Fri 9:00 AM – 5:00 PM · Sat 10:00 AM – 1:00 PM",
-    wait: "0–5 minutes",
-    waitTier: "short",
-    zips: ["01406", "01405"],
-  },
-  {
-    id: "northfield",
-    name: "Northfield Branch",
-    address: "310 Northfield St, Millbrook, MA 01407",
-    hours: "Mon–Fri 9:30 AM – 5:30 PM · Closed Sat",
-    wait: "15–25 minutes",
-    waitTier: "medium",
-    zips: ["01407", "01408", "01402"],
-  },
-];
-
 export const TIME_SLOTS = [
   "9:00 AM",
   "9:30 AM",
@@ -120,11 +72,6 @@ export const TIME_SLOTS = [
 ];
 
 export const findService = (id) => SERVICES.find((s) => s.id === id) || null;
-
-export const findBranch = (id) => BRANCHES.find((b) => b.id === id) || null;
-
-export const branchesForZip = (zip) =>
-  zip ? BRANCHES.filter((b) => b.zips.includes(zip)) : [];
 
 export const SAMPLE_ZIPS = ["02108", "02459", "01451"];
 

@@ -3,12 +3,17 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowRight, CalendarDays, Clock } from "lucide-react";
 import FlowShell from "@/components/FlowShell";
 import StartOver from "@/components/StartOver";
-import { TIME_SLOTS, findBranch, findService, todayISO } from "@/data/sampleData";
+import { TIME_SLOTS, findService, todayISO } from "@/data/sampleData";
+import { branchFromSearch, branchSearchParams } from "@/lib/branch";
 
 export const Route = createFileRoute("/appointment")({
   validateSearch: (search) => ({
     service: typeof search.service === "string" ? search.service : undefined,
     branch: typeof search.branch === "string" ? search.branch : undefined,
+    address: typeof search.address === "string" ? search.address : undefined,
+    wait: typeof search.wait === "string" ? search.wait : undefined,
+    tier: typeof search.tier === "string" ? search.tier : undefined,
+    hours: typeof search.hours === "string" ? search.hours : undefined,
     zip: typeof search.zip === "string" ? search.zip : undefined,
     date: typeof search.date === "string" ? search.date : undefined,
     time: typeof search.time === "string" ? search.time : undefined,
@@ -23,20 +28,20 @@ export const Route = createFileRoute("/appointment")({
 });
 
 function AppointmentStep() {
+  const search = Route.useSearch();
   const {
     service: serviceId,
-    branch: branchId,
     zip,
     date: initialDate,
     time: initialTime,
-  } = Route.useSearch();
+  } = search;
   const navigate = useNavigate();
   const [minDate, setMinDate] = useState("");
   const [date, setDate] = useState(initialDate || "");
   const [time, setTime] = useState(initialTime || "");
 
   const service = findService(serviceId);
-  const branch = findBranch(branchId);
+  const branch = branchFromSearch(search);
 
   useEffect(() => {
     setMinDate(todayISO());
@@ -50,7 +55,7 @@ function AppointmentStep() {
     if (!ready) return;
     navigate({
       to: "/review",
-      search: { service: service.id, branch: branch.id, zip, date, time },
+      search: { service: service.id, zip, ...branchSearchParams(branch), date, time },
     });
   };
 
@@ -124,7 +129,7 @@ function AppointmentStep() {
         </button>
         <Link
           to="/visit"
-          search={{ service: service.id, branch: branch.id, zip }}
+          search={{ service: service.id, zip, ...branchSearchParams(branch) }}
           className="text-xs text-muted-foreground underline-offset-4 hover:underline"
         >
           Back to wait time & documents

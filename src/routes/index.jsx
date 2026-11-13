@@ -1,6 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, Clock, FileText, CalendarCheck } from "lucide-react";
-import { BRANCHES } from "@/data/sampleData";
+
+const FEATURED_BRANCH = {
+  name: "Wells Fargo – Market Street Branch",
+  address: "1256 Market Street, San Francisco, CA 94102",
+  wait: "10–20 minutes",
+  hours: "Mon–Fri 9:00 AM – 5:00 PM · Sat 9:00 AM – 1:00 PM",
+};
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -23,7 +29,7 @@ const PREVIEW_STEPS = [
 ];
 
 function Home() {
-  const branch = BRANCHES[0];
+  const branch = FEATURED_BRANCH;
 
   return (
     <div className="mx-auto w-full max-w-5xl px-5 sm:px-8">
@@ -58,7 +64,7 @@ function Home() {
           <div className="absolute -inset-3 rounded-[2rem] bg-[hsl(var(--sand))]" />
           <div className="relative rounded-3xl border border-border bg-card p-6 shadow-sm">
             <p className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
-              Sample branch
+              Wells Fargo branch
             </p>
             <p className="mt-2 font-display text-2xl tracking-tight">{branch.name}</p>
             <p className="mt-1 text-xs leading-relaxed text-muted-foreground">

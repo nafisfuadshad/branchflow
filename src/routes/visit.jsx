@@ -4,12 +4,17 @@ import FlowShell from "@/components/FlowShell";
 import WaitBadge from "@/components/WaitBadge";
 import DocumentChecklist from "@/components/DocumentChecklist";
 import StartOver from "@/components/StartOver";
-import { findBranch, findService } from "@/data/sampleData";
+import { findService } from "@/data/sampleData";
+import { branchFromSearch, branchSearchParams } from "@/lib/branch";
 
 export const Route = createFileRoute("/visit")({
   validateSearch: (search) => ({
     service: typeof search.service === "string" ? search.service : undefined,
     branch: typeof search.branch === "string" ? search.branch : undefined,
+    address: typeof search.address === "string" ? search.address : undefined,
+    wait: typeof search.wait === "string" ? search.wait : undefined,
+    tier: typeof search.tier === "string" ? search.tier : undefined,
+    hours: typeof search.hours === "string" ? search.hours : undefined,
     zip: typeof search.zip === "string" ? search.zip : undefined,
   }),
   head: () => ({
@@ -22,9 +27,10 @@ export const Route = createFileRoute("/visit")({
 });
 
 function VisitStep() {
-  const { service: serviceId, branch: branchId, zip } = Route.useSearch();
+  const search = Route.useSearch();
+  const { service: serviceId, zip } = search;
   const service = findService(serviceId);
-  const branch = findBranch(branchId);
+  const branch = branchFromSearch(search);
 
   if (!service || !branch) return <StartOver message="Pick a service and a branch first." />;
 
@@ -33,7 +39,7 @@ function VisitStep() {
       step={3}
       eyebrow="Step 4 of 7"
       title="Here's what to expect"
-      intro="A sample estimate for today, plus the documents our fictional banker would ask to see."
+      intro="A sample estimate for today, plus the documents the banker would ask to see."
     >
       <div className="rounded-2xl bg-primary p-6 text-primary-foreground sm:p-8">
         <p className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.16em] opacity-70">
@@ -81,7 +87,7 @@ function VisitStep() {
       <div className="mt-8 flex flex-wrap items-center gap-4">
         <Link
           to="/appointment"
-          search={{ service: service.id, branch: branch.id, zip }}
+          search={{ service: service.id, zip, ...branchSearchParams(branch) }}
           className="group inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/20"
         >
           Choose a date & time

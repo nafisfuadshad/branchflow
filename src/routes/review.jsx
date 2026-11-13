@@ -1,17 +1,22 @@
 import { useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowRight, CalendarDays, Clock, FileText, Mail, MapPin, Timer } from "lucide-react";
+import { ArrowRight, CalendarDays, Clock, FileText, Mail, MapPin, Timer, User } from "lucide-react";
 import FlowShell from "@/components/FlowShell";
 import DocumentChecklist from "@/components/DocumentChecklist";
 import WaitBadge from "@/components/WaitBadge";
 import StartOver from "@/components/StartOver";
 import SummaryRow from "@/components/SummaryRow";
-import { findBranch, findService, formatDate } from "@/data/sampleData";
+import { findService, formatDate } from "@/data/sampleData";
+import { branchFromSearch, branchSearchParams } from "@/lib/branch";
 
 export const Route = createFileRoute("/review")({
   validateSearch: (search) => ({
     service: typeof search.service === "string" ? search.service : undefined,
     branch: typeof search.branch === "string" ? search.branch : undefined,
+    address: typeof search.address === "string" ? search.address : undefined,
+    wait: typeof search.wait === "string" ? search.wait : undefined,
+    tier: typeof search.tier === "string" ? search.tier : undefined,
+    hours: typeof search.hours === "string" ? search.hours : undefined,
     zip: typeof search.zip === "string" ? search.zip : undefined,
     date: typeof search.date === "string" ? search.date : undefined,
     time: typeof search.time === "string" ? search.time : undefined,
@@ -26,10 +31,13 @@ export const Route = createFileRoute("/review")({
 });
 
 function ReviewStep() {
-  const { service: serviceId, branch: branchId, zip, date, time } = Route.useSearch();
+  const search = Route.useSearch();
+  const { service: serviceId, zip, date, time } = search;
   const service = findService(serviceId);
-  const branch = findBranch(branchId);
+  const branch = branchFromSearch(search);
   const navigate = useNavigate();
+  const [name, setName] = useState("");
+  const [nameError, setNameError] = useState("");
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
 
@@ -37,17 +45,29 @@ function ReviewStep() {
     return <StartOver message="This appointment summary is incomplete." />;
   }
 
-  const details = { service: service.id, branch: branch.id, zip, date, time };
+  const details = { service: service.id, zip, ...branchSearchParams(branch), date, time };
 
   const confirm = () => {
+    const fullName = name.trim();
     const address = email.trim();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(address)) {
-      setEmailError("Enter a valid email address so we can send your confirmation.");
-      return;
+    let valid = true;
+
+    if (fullName.length < 2) {
+      setNameError("Enter your full name as it appears on your ID.");
+      valid = false;
+    } else {
+      setNameError("");
     }
 
-    setEmailError("");
-    navigate({ to: "/confirmation", search: { ...details, email: address } });
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(address)) {
+      setEmailError("Enter a valid email address so we can send your confirmation.");
+      valid = false;
+    } else {
+      setEmailError("");
+    }
+
+    if (!valid) return;
+    navigate({ to: "/confirmation", search: { ...details, name: fullName, email: address } });
   };
 
   return (
@@ -64,6 +84,7 @@ function ReviewStep() {
         </div>
 
         <div className="mt-5">
+          {name.trim() && <SummaryRow icon={User} label="Name" value={name.trim()} />}
           <SummaryRow icon={FileText} label="Service" value={service.name} />
           <SummaryRow icon={MapPin} label="Branch" value={`${branch.name} · ${branch.address}`} />
           <SummaryRow icon={CalendarDays} label="Date" value={formatDate(date)} />
@@ -78,6 +99,33 @@ function ReviewStep() {
           <div className="mt-3">
             <DocumentChecklist documents={service.documents} />
           </div>
+        </div>
+
+        <div className="mt-6 border-t border-border pt-5">
+          <label
+            htmlFor="fullName"
+            className="flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-muted-foreground"
+          >
+            <User className="h-3.5 w-3.5" />
+            Full name
+          </label>
+          <input
+            id="fullName"
+            type="text"
+            required
+            autoComplete="name"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            placeholder="Jordan Rivera"
+            className="mt-3 w-full rounded-xl border border-input bg-background px-4 py-3 text-sm text-foreground outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-ring/20 sm:max-w-sm"
+          />
+          {nameError ? (
+            <p className="mt-3 text-xs text-destructive">{nameError}</p>
+          ) : (
+            <p className="mt-3 text-xs text-muted-foreground">
+              We'll put this name on your appointment.
+            </p>
+          )}
         </div>
 
         <div className="mt-6 border-t border-border pt-5">
@@ -119,7 +167,7 @@ function ReviewStep() {
         </button>
         <Link
           to="/appointment"
-          search={{ service: service.id, branch: branch.id, zip, date, time }}
+          search={{ service: service.id, zip, ...branchSearchParams(branch), date, time }}
           className="text-xs text-muted-foreground underline-offset-4 hover:underline"
         >
           Change date or time
