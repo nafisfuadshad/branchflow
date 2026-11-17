@@ -1,7 +1,7 @@
 <mjml>
   <mj-head>
-    <mj-title>Your BranchFlow appointment is confirmed</mj-title>
-    <mj-preview>{{service}} at {{branch}} on {{date}} at {{time}}</mj-preview>
+    <mj-title>BranchFlow Student Project Confirmation</mj-title>
+    <mj-preview>{{name}} · {{service}} at {{branch}} on {{date}} at {{time}}</mj-preview>
     <mj-attributes>
       <mj-all font-family="Inter, Helvetica, Arial, sans-serif" />
       <mj-text color="#132521" font-size="15px" line-height="1.6" padding="0" />
@@ -22,15 +22,18 @@
 
     <mj-section padding="40px 40px 0">
       <mj-column>
-        <mj-text mj-class="h" font-size="34px" line-height="1.15">Your appointment is confirmed</mj-text>
+        <mj-text mj-class="h" font-size="34px" line-height="1.15">BranchFlow Student Project Confirmation</mj-text>
         <mj-text color="#5d6f6c" padding="14px 0 0">
-          Here are the details for your branch visit. Please arrive a few minutes early and bring the documents listed below.
+          Hi {{name}}, your appointment is confirmed for this branch visit. Please arrive a few minutes early and bring the documents listed below.
         </mj-text>
       </mj-column>
     </mj-section>
 
     <mj-section padding="26px 40px 0">
       <mj-column background-color="#f5efe6" border-radius="24px" padding="26px 28px">
+        <mj-text mj-class="label" padding="0 0 4px">Customer name</mj-text>
+        <mj-text font-size="16px" font-weight="700" padding="0 0 18px">{{name}}</mj-text>
+
         <mj-text mj-class="label" padding="0 0 4px">Service</mj-text>
         <mj-text font-size="16px" font-weight="700" padding="0 0 18px">{{service}}</mj-text>
 
@@ -53,6 +56,14 @@
       <mj-column>
         <mj-text mj-class="h" font-size="19px" padding="0 0 6px">What to bring</mj-text>
         <mj-text color="#5d6f6c" font-size="14px">{{documents}}</mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section padding="26px 40px 0">
+      <mj-column background-color="#f5efe6" border-radius="24px" padding="20px 24px">
+        <mj-text color="#5d6f6c" font-size="12px" line-height="1.6">
+          This confirmation is for academic project demonstration purposes only. No real appointment has been scheduled with Wells Fargo. BranchFlow is a student prototype and is not affiliated with or endorsed by Wells Fargo.
+        </mj-text>
       </mj-column>
     </mj-section>
 

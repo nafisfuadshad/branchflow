@@ -1,12 +1,16 @@
+import { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { Check, MapPin, Clock, CalendarDays, Timer, FileText, Mail, User } from "lucide-react";
 import FlowShell from "@/components/FlowShell";
 import DocumentChecklist from "@/components/DocumentChecklist";
+import EmailSentNotice from "@/components/EmailSentNotice";
 import WaitBadge from "@/components/WaitBadge";
 import StartOver from "@/components/StartOver";
 import Row from "@/components/SummaryRow";
 import { findService, formatDate } from "@/data/sampleData";
 import { branchFromSearch } from "@/lib/branch";
+import { sendAppointmentConfirmation } from "@/lib/server-fns";
 
 export const Route = createFileRoute("/confirmation")({
   validateSearch: (search) => ({
@@ -44,6 +48,31 @@ function ConfirmationStep() {
   const { service: serviceId, date, time, name, email } = search;
   const service = findService(serviceId);
   const branch = branchFromSearch(search);
+  const sendConfirmation = useServerFn(sendAppointmentConfirmation);
+  const [emailStatus, setEmailStatus] = useState("idle");
+  const sentRef = useRef(false);
+
+  useEffect(() => {
+    if (sentRef.current || !email || !service || !branch || !date || !time) return;
+    sentRef.current = true;
+    setEmailStatus("sending");
+
+    sendConfirmation({
+      data: {
+        email,
+        name: name || "BranchFlow visitor",
+        service: service.name,
+        branch: branch.name,
+        branch_address: branch.address,
+        date: formatDate(date),
+        time,
+        wait: branch.wait,
+        documents: service.documents,
+      },
+    })
+      .then((result) => setEmailStatus(result?.success ? "sent" : "failed"))
+      .catch(() => setEmailStatus("failed"));
+  }, [email]);
 
   if (!service || !branch || !date || !time) {
     return <StartOver message="This appointment summary is incomplete." />;
@@ -76,6 +105,8 @@ function ConfirmationStep() {
           <Row icon={Timer} label="Estimated wait" value={branch.wait} />
           {email && <Row icon={Mail} label="Email" value={email} />}
         </div>
+
+        <EmailSentNotice status={emailStatus} email={email} />
 
         <div className="mt-6 rounded-xl bg-accent/60 p-5">
           <p className="text-[11px] uppercase tracking-[0.14em] text-accent-foreground/70">

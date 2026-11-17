@@ -40,6 +40,7 @@ export const lookupZipcode = createServerFn({ method: "GET" })
 
 const AppointmentEmailInput = z.object({
   email: z.string().email().max(200),
+  name: z.string().min(1).max(120),
   service: z.string().max(120),
   branch: z.string().max(120),
   branch_address: z.string().max(200),
@@ -59,13 +60,14 @@ export const sendAppointmentConfirmation = createServerFn({ method: "POST" })
         template_name: "AppointmentConfirmation",
         category: "transactional",
         variables: {
+          name: data.name,
           service: data.service,
           branch: data.branch,
           branch_address: data.branch_address,
           date: data.date,
           time: data.time,
           wait: data.wait,
-          documents: data.documents.join(" · "),
+          documents: data.documents.join("\n"),
         },
       });
 
