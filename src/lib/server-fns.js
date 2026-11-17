@@ -38,25 +38,6 @@ export const lookupZipcode = createServerFn({ method: "GET" })
     }
   });
 
-const AppointmentEmailInput = z.object({
-  email: z.string().email().max(200),
-  name: z.string().min(1).max(120),
-  service: z.string().max(120),
-  branch: z.string().max(120),
-  branch_address: z.string().max(200),
-  date: z.string().max(60),
-  time: z.string().max(20),
-  wait: z.string().max(40),
-  documents: z.array(z.string().max(160)).max(10),
-});
-
-export const sendAppointmentConfirmation = createServerFn({ method: "POST" })
-  .validator(AppointmentEmailInput)
-  .handler(async ({ data, context }) => {
-    const { sendViaGmail } = await import("@/lib/appointmentEmail.server.js");
-    return sendViaGmail(context.getBase44(), data);
-  });
-
 const NEARBY_RADIUS_MILES = 25;
 
 // Sample (prototype) wait estimates — BranchFlow is not connected to Wells Fargo.
