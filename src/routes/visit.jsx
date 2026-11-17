@@ -1,11 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, MapPin, Timer } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import FlowShell from "@/components/FlowShell";
+import BranchStatus from "@/components/BranchStatus";
 import WaitBadge from "@/components/WaitBadge";
 import DocumentChecklist from "@/components/DocumentChecklist";
 import StartOver from "@/components/StartOver";
 import { findService } from "@/data/sampleData";
 import { branchFromSearch, branchSearchParams } from "@/lib/branch";
+import useBranchStatus from "@/hooks/useBranchStatus";
 
 export const Route = createFileRoute("/visit")({
   validateSearch: (search) => ({
@@ -32,6 +34,7 @@ function VisitStep() {
   const { service: serviceId, zip } = search;
   const service = findService(serviceId);
   const branch = branchFromSearch(search);
+  const status = useBranchStatus(branch?.schedule);
 
   if (!service || !branch) return <StartOver message="Pick a service and a branch first." />;
 
@@ -42,18 +45,7 @@ function VisitStep() {
       title="Here's what to expect"
       intro="A sample estimate for today, plus the documents the banker would ask to see."
     >
-      <div className="rounded-2xl bg-primary p-6 text-primary-foreground sm:p-8">
-        <p className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.16em] opacity-70">
-          <Timer className="h-3.5 w-3.5" />
-          Estimated wait right now
-        </p>
-        <p className="mt-3 font-display text-4xl tracking-tight sm:text-5xl">{branch.wait}</p>
-        <p className="mt-3 flex items-center gap-1.5 text-sm opacity-80">
-          <MapPin className="h-3.5 w-3.5 shrink-0" />
-          {branch.name} · {branch.address}
-        </p>
-        <p className="mt-1 text-xs opacity-60">{branch.hours}</p>
-      </div>
+      <BranchStatus branch={branch} status={status} />
 
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         <div className="rounded-2xl border border-border bg-card p-6">
@@ -67,9 +59,11 @@ function VisitStep() {
             {service.description}
           </p>
           <p className="mt-3 text-xs text-muted-foreground">{service.duration} at the branch</p>
-          <div className="mt-4">
-            <WaitBadge wait={branch.wait} tier={branch.waitTier} />
-          </div>
+          {status?.isOpen && branch.wait && (
+            <div className="mt-4">
+              <WaitBadge wait={branch.wait} tier={branch.waitTier} />
+            </div>
+          )}
         </div>
 
         <div className="rounded-2xl border border-border bg-card p-6">
