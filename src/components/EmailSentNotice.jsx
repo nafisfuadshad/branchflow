@@ -10,7 +10,7 @@ export default function EmailSentNotice({ status, email }) {
     ? "Sending your confirmation email…"
     : sent
       ? `Confirmation email sent to ${email}.`
-      : `We couldn't send the confirmation email to ${email} right now.`;
+      : "Confirmation created, but the email could not be delivered.";
 
   const tone = sending
     ? "border-border bg-secondary text-secondary-foreground"

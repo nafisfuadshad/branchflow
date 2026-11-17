@@ -53,28 +53,8 @@ const AppointmentEmailInput = z.object({
 export const sendAppointmentConfirmation = createServerFn({ method: "POST" })
   .validator(AppointmentEmailInput)
   .handler(async ({ data, context }) => {
-    const result = await context
-      .getBase44()
-      .asServiceRole.integrations.Core.SendEmail({
-        to: data.email,
-        template_name: "AppointmentConfirmation",
-        category: "transactional",
-        variables: {
-          name: data.name,
-          service: data.service,
-          branch: data.branch,
-          branch_address: data.branch_address,
-          date: data.date,
-          time: data.time,
-          wait: data.wait,
-          documents: data.documents.join("\n"),
-        },
-      });
-
-    return {
-      success: result?.success !== false,
-      message: result?.message ?? null,
-    };
+    const { sendViaGmail } = await import("@/lib/appointmentEmail.server.js");
+    return sendViaGmail(context.getBase44(), data);
   });
 
 const NEARBY_RADIUS_MILES = 25;
