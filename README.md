@@ -67,33 +67,45 @@ After the ZIP finishes downloading, extract it before continuing.
 
 1. Open the **Downloads** folder.
 2. Right-click the downloaded BranchFlow ZIP file.
-3. Select **Extract All...**
+3. Click **Extract All...**
 4. Click **Extract**.
-5. Open the extracted folder named `branchflow-main`.
-6. While inside the `branchflow-main` folder, click the address bar at the top of File Explorer.
-7. Delete the current text in the address bar.
-8. Type:
+5. Open the extracted folder.
+6. If you see another folder named `branchflow-main` inside it, open that folder too.
+7. Make sure you are inside the folder that contains both:
+   - `package.json`
+   - `package-lock.json`
+
+8. While you are inside that folder, click the **address bar at the top of File Explorer**.
+
+9. Delete the text in the address bar and type:
 
 ```text
-powershell
+cmd
 ```
 
-9. Press **Enter**.
+10. Press **Enter**.
 
-PowerShell should open directly inside the BranchFlow project folder.
+A black Command Prompt window should open directly inside the correct BranchFlow project folder.
 
-To confirm the correct folder, type:
+11. To confirm you are in the correct folder, type:
 
-```text
-pwd
+```cmd
+dir package*.json
 ```
 
 and press **Enter**.
 
-The path should end with:
+You should see both:
 
 ```text
-branchflow-main
+package.json
+package-lock.json
+```
+
+12. Once both files are visible, continue with:
+
+```cmd
+npm ci
 ```
 
 ### macOS
