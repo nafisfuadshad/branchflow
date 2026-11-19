@@ -20,13 +20,81 @@ From this GitHub repository, click:
 
 **Code → Download ZIP**
 
-Extract the ZIP file and open Terminal inside the extracted project folder.
+After the ZIP finishes downloading, extract it before continuing.
+
+#### Windows
+
+1. Open your **Downloads** folder.
+2. Right-click the downloaded BranchFlow ZIP file.
+3. Click **Extract All...**
+4. Click **Extract**.
+5. Open the extracted folder named `branchflow-main`.
+6. While you are inside the `branchflow-main` folder, click the **address bar at the top of File Explorer**.
+
+The address bar normally shows something similar to:
+
+`This PC > Downloads > branchflow-main`
+
+7. Click inside the address bar, delete what is there, and type:
+
+```text
+powershell
+```
+
+8. Press **Enter**.
+
+A PowerShell window will open directly inside the BranchFlow project folder.
+
+9. To confirm you are in the correct folder, type:
+
+```powershell
+pwd
+```
+
+and press **Enter**.
+
+The displayed path should end with:
+
+```text
+branchflow-main
+```
+
+#### macOS
+
+1. Open **Terminal**.
+2. Type:
+
+```text
+cd 
+```
+
+Make sure there is one space after `cd`. Do not press Enter yet.
+
+3. Drag the extracted `branchflow-main` folder from Finder into the Terminal window.
+4. Press **Enter**.
+5. To confirm you are in the correct folder, type:
+
+```bash
+pwd
+```
+
+and press **Enter**.
+
+The displayed path should end with:
+
+```text
+branchflow-main
+```
 
 ### 2. Install Dependencies
+
+Once PowerShell or Terminal is open inside the `branchflow-main` folder, type:
 
 ```bash
 npm ci
 ```
+
+Press **Enter** and wait until the installation finishes before continuing.
 
 ### 3. Log in to Base44
 
